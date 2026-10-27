@@ -2,16 +2,18 @@ import { Form, Head, Link } from '@inertiajs/react';
 import {
     AuthField,
     AuthHeading,
+    AuthStatus,
     AuthSubmit,
 } from '@/components/dragona/auth-form';
 
-export default function Register() {
+export default function Register({ status }: { status?: string }) {
     return (
         <>
             <Head title="Register" />
             <AuthHeading title="Forge your legacy">
                 Create your Dragona Dominion account and begin your journey.
             </AuthHeading>
+            <AuthStatus status={status} />
             <Form
                 action="/register"
                 method="post"
@@ -21,13 +23,14 @@ export default function Register() {
                 {({ processing, errors }) => (
                     <>
                         <AuthField
-                            label="Display name"
-                            name="name"
-                            autoComplete="nickname"
-                            maxLength={255}
+                            label="Account name"
+                            name="username"
+                            autoComplete="username"
+                            minLength={4}
+                            maxLength={20}
                             required
                             autoFocus
-                            error={errors.name}
+                            error={errors.username}
                         />
                         <AuthField
                             label="Email address"
@@ -35,7 +38,7 @@ export default function Register() {
                             type="email"
                             autoComplete="email"
                             placeholder="you@example.com"
-                            maxLength={255}
+                            maxLength={254}
                             required
                             error={errors.email}
                         />
@@ -44,19 +47,21 @@ export default function Register() {
                             name="password"
                             type="password"
                             autoComplete="new-password"
-                            minLength={12}
+                            minLength={8}
+                            maxLength={12}
                             required
                             error={errors.password}
                         />
                         <p className="-mt-2 font-[Arial,sans-serif] text-xs text-slate-400">
-                            Use at least 12 characters, including letters and
-                            numbers.
+                            Use 8 to 12 characters, including letters and
+                            numbers. This is also your game password.
                         </p>
                         <AuthField
                             label="Confirm password"
                             name="password_confirmation"
                             type="password"
                             autoComplete="new-password"
+                            maxLength={12}
                             required
                             error={errors.password_confirmation}
                         />

@@ -1,5 +1,6 @@
 <?php
 
+use App\Actions\Dragona\RegisterDragonaAccount;
 use Laravel\Fortify\Features;
 
 beforeEach(function () {
@@ -13,13 +14,23 @@ test('registration screen can be rendered', function () {
 });
 
 test('new users can register', function () {
+    $this->mock(RegisterDragonaAccount::class, function ($mock) {
+        $mock->shouldReceive('handle')
+            ->once()
+            ->with('TestUser', 'test@example.com', 'Dragon123')
+            ->andReturn(1001010000000000001);
+    });
+
     $response = $this->post(route('register.store'), [
-        'name' => 'Test User',
+        'username' => 'TestUser',
         'email' => 'test@example.com',
-        'password' => 'DragonRealm2026!',
-        'password_confirmation' => 'DragonRealm2026!',
+        'password' => 'Dragon123',
+        'password_confirmation' => 'Dragon123',
     ]);
 
-    $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+    $this->assertGuest();
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertSessionHas('status', 'Account created successfully.')
+        ->assertRedirect(route('register', absolute: false));
 });

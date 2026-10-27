@@ -1,5 +1,6 @@
 <?php
 
+use App\Actions\Dragona\RegisterDragonaAccount;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
@@ -98,8 +99,16 @@ test('superadmin can delete a post', function () {
 });
 
 test('registration cannot grant the superadmin role', function () {
-    $this->post('/register', ['name' => 'Player', 'email' => 'player@example.com', 'password' => 'DragonRealm2026!', 'password_confirmation' => 'DragonRealm2026!', 'role' => 'superadmin'])->assertSessionHasNoErrors();
-    expect(User::where('email', 'player@example.com')->firstOrFail()->role)->toBe('user');
+    $this->mock(RegisterDragonaAccount::class, function ($mock) {
+        $mock->shouldReceive('handle')
+            ->once()
+            ->with('Player', 'player@example.com', 'Dragon123')
+            ->andReturn(1001010000000000001);
+    });
+
+    $this->post('/register', ['username' => 'Player', 'email' => 'player@example.com', 'password' => 'Dragon123', 'password_confirmation' => 'Dragon123', 'role' => 'superadmin'])->assertSessionHasNoErrors();
+    expect(User::where('email', 'player@example.com')->exists())->toBeFalse();
+    $this->assertGuest();
 });
 
 test('superadmin command does not replace an existing password', function () {

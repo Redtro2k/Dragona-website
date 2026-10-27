@@ -1,34 +1,42 @@
 <?php
 
+use App\Actions\Dragona\RegisterDragonaAccount;
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
 
-test('registration normalizes email and hashes the password', function () {
-    $this->post('/register', [
-        'name' => 'Dragon Rider',
-        'email' => 'RIDER@example.com',
-        'password' => 'DragonRealm2026!',
-        'password_confirmation' => 'DragonRealm2026!',
-    ])->assertSessionHasNoErrors()->assertRedirect('/dashboard');
+test('registration normalizes email before creating the game account', function () {
+    $this->mock(RegisterDragonaAccount::class, function ($mock) {
+        $mock->shouldReceive('handle')
+            ->once()
+            ->with('DragonRider', 'rider@example.com', 'Dragon123')
+            ->andReturn(1001010000000000001);
+    });
 
-    $user = User::where('email', 'rider@example.com')->firstOrFail();
-    expect(Hash::check('DragonRealm2026!', $user->password))->toBeTrue();
-    $this->assertAuthenticatedAs($user);
+    $this->post('/register', [
+        'username' => 'DragonRider',
+        'email' => 'RIDER@example.com',
+        'password' => 'Dragon123',
+        'password_confirmation' => 'Dragon123',
+    ])->assertSessionHasNoErrors()->assertRedirect('/register');
+
+    $this->assertGuest();
 });
 
-test('registration rejects duplicate email and weak or mismatched passwords', function () {
-    User::factory()->create(['email' => 'rider@example.com']);
+test('registration rejects invalid account names and weak or mismatched passwords', function () {
+    $this->mock(RegisterDragonaAccount::class, function ($mock) {
+        $mock->shouldNotReceive('handle');
+    });
+
     $this->post('/register', [
-        'name' => 'Rider',
-        'email' => 'RIDER@example.com',
+        'username' => 'bad name',
+        'email' => 'rider@example.com',
         'password' => 'short',
         'password_confirmation' => 'different',
-    ])->assertSessionHasErrors(['email', 'password']);
+    ])->assertSessionHasErrors(['username', 'password']);
     $this->assertGuest();
-    expect(User::count())->toBe(1);
 });
 
 test('unknown reset email has the same public response as a registered email', function () {
