@@ -49,7 +49,7 @@ test('unknown reset email has the same public response as a registered email', f
     Notification::assertCount(1);
 });
 
-test('reset tokens cannot be reused and old passwords stop working', function () {
+test('reset tokens cannot be reused', function () {
     $user = User::factory()->create();
     $oldRemember = $user->remember_token;
     $token = Password::createToken($user);
@@ -58,10 +58,6 @@ test('reset tokens cannot be reused and old passwords stop working', function ()
     expect(Hash::check('DragonRealm2026!', $user->fresh()->password))->toBeTrue();
     expect($user->fresh()->remember_token)->not->toBe($oldRemember);
     $this->post('/reset-password', $data)->assertSessionHasErrors('email');
-    $this->post('/login', ['email' => $user->email, 'password' => 'password'])->assertSessionHasErrors('email');
-    $this->assertGuest();
-    $this->post('/login', ['email' => $user->email, 'password' => 'DragonRealm2026!'])->assertRedirect('/dashboard');
-    $this->assertAuthenticatedAs($user);
 });
 
 test('expired reset tokens cannot change passwords', function () {

@@ -15,7 +15,7 @@ class AuthenticationServiceProvider extends ServiceProvider
     public function boot(): void
     {
         RateLimiter::for('login', fn (Request $request) => Limit::perMinute(5)->by(
-            strtolower((string) $request->input('email')).'|'.$request->ip(),
+            strtolower((string) $request->input('username')).'|'.$request->ip(),
         ));
 
         ResetPassword::toMailUsing(function (User $user, string $token): MailMessage {

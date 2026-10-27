@@ -1,8 +1,9 @@
 <?php
 
+use App\Actions\Dragona\AuthenticateDragonaAccount;
+use App\Models\GameAccount;
 use App\Models\User;
 use Illuminate\Support\Facades\RateLimiter;
-use Laravel\Fortify\Features;
 
 test('login screen can be rendered', function () {
     $response = $this->get(route('login'));
@@ -11,44 +12,43 @@ test('login screen can be rendered', function () {
 });
 
 test('users can authenticate using the login screen', function () {
-    $user = User::factory()->create();
+    $account = new GameAccount;
+    $account->setRawAttributes([
+        'ObjectId' => 1001010000000000999,
+        'IdName' => 'DragonRider',
+        'Email' => 'rider@example.com',
+        'Status' => 0,
+    ], true);
+
+    $this->mock(AuthenticateDragonaAccount::class, function ($mock) use ($account) {
+        $mock->shouldReceive('handle')
+            ->once()
+            ->with('DragonRider', 'Dragon123', '127.0.0.1')
+            ->andReturn($account);
+    });
 
     $response = $this->post(route('login.store'), [
-        'email' => $user->email,
-        'password' => 'password',
+        'username' => 'DragonRider',
+        'password' => 'Dragon123',
     ]);
 
     $this->assertAuthenticated();
+    $response->assertSessionHas('auth.game_account_id', 1001010000000000999);
     $response->assertRedirect(route('dashboard', absolute: false));
 });
 
-test('users with two factor enabled are redirected to two factor challenge', function () {
-    $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());
-
-    Features::twoFactorAuthentication([
-        'confirm' => true,
-        'confirmPassword' => true,
-    ]);
-
-    $user = User::factory()->withTwoFactor()->create();
-
-    $response = $this->post(route('login'), [
-        'email' => $user->email,
-        'password' => 'password',
-    ]);
-
-    $response->assertRedirect(route('two-factor.login'));
-    $response->assertSessionHas('login.id', $user->id);
-    $this->assertGuest();
-});
-
 test('users can not authenticate with invalid password', function () {
-    $user = User::factory()->create();
+    $this->mock(AuthenticateDragonaAccount::class, function ($mock) {
+        $mock->shouldReceive('handle')
+            ->once()
+            ->with('DragonRider', 'WrongPass', '127.0.0.1')
+            ->andReturnNull();
+    });
 
     $this->post(route('login.store'), [
-        'email' => $user->email,
-        'password' => 'wrong-password',
-    ]);
+        'username' => 'DragonRider',
+        'password' => 'WrongPass',
+    ])->assertSessionHasErrors('username');
 
     $this->assertGuest();
 });
@@ -64,13 +64,15 @@ test('users can logout', function () {
 });
 
 test('users are rate limited', function () {
-    $user = User::factory()->create();
+    $this->mock(AuthenticateDragonaAccount::class, function ($mock) {
+        $mock->shouldNotReceive('handle');
+    });
 
-    RateLimiter::increment(md5('login'.implode('|', [$user->email, '127.0.0.1'])), amount: 5);
+    RateLimiter::increment(md5('login'.implode('|', ['dragonrider', '127.0.0.1'])), amount: 5);
 
     $response = $this->post(route('login.store'), [
-        'email' => $user->email,
-        'password' => 'wrong-password',
+        'username' => 'DragonRider',
+        'password' => 'WrongPass',
     ]);
 
     $response->assertTooManyRequests();

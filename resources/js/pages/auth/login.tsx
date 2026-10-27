@@ -23,41 +23,25 @@ export default function Login({ status }: { status?: string }) {
                 {({ processing, errors }) => (
                     <>
                         <AuthField
-                            label="Email address"
-                            name="email"
-                            type="email"
-                            autoComplete="email"
-                            placeholder="you@example.com"
-                            maxLength={255}
+                            label="Account name"
+                            name="username"
+                            type="text"
+                            autoComplete="username"
+                            placeholder="Your game account name"
+                            maxLength={20}
                             required
                             autoFocus
-                            error={errors.email}
+                            error={errors.username}
                         />
                         <AuthField
                             label="Password"
                             name="password"
                             type="password"
                             autoComplete="current-password"
+                            maxLength={13}
                             required
                             error={errors.password}
                         />
-                        <div className="flex flex-wrap items-center justify-between gap-3 font-[Arial,sans-serif] text-sm">
-                            <label className="flex items-center gap-2 text-slate-300">
-                                <input
-                                    type="checkbox"
-                                    name="remember"
-                                    value="1"
-                                    className="size-4 accent-cyan-400"
-                                />{' '}
-                                Remember me
-                            </label>
-                            <Link
-                                href="/forgot-password"
-                                className="text-cyan-200 hover:underline"
-                            >
-                                Forgot password?
-                            </Link>
-                        </div>
                         <AuthSubmit processing={processing}>
                             Enter the realm
                         </AuthSubmit>
