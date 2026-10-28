@@ -23,13 +23,13 @@ export default function AuthLayout({
                 <section className="text-center lg:text-left">
                     <Link href="/" aria-label="Dragona Dominion home">
                         <img
-                            src="/storage/Assets/DragonaLogoD.png"
+                            src="/storage/Assets/Logo2.png"
                             alt="Dragona Dominion"
-                            className="mx-auto w-72 drop-shadow-[0_0_25px_rgba(34,211,238,.4)] sm:w-96 lg:-ml-8"
+                            className="mx-auto h-auto w-[min(92vw,620px)] max-w-none object-contain mix-blend-screen drop-shadow-[0_0_24px_rgba(34,211,238,0.5)] lg:-ml-14"
                         />
                     </Link>
-                    <p className="mt-5 text-xs font-bold tracking-[.3em] text-cyan-200 uppercase">
-                        The realm awaits
+                    <p className="-mt-3 text-xs font-bold tracking-[0.14em] text-white uppercase drop-shadow-[0_3px_10px_rgba(0,0,0,0.85)] sm:-mt-5 sm:text-sm lg:text-left">
+                        Where dragons rise, kingdoms fall.
                     </p>
                     <h2 className="mt-5 text-3xl leading-relaxed font-black sm:text-4xl">
                         Your legend

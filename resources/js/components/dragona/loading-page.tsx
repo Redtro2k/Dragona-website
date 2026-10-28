@@ -59,10 +59,13 @@ export default function LoadingPage() {
             <div className="relative z-10 flex flex-col items-center px-6 text-center">
                 <img
                     alt="Dragona Dominion"
-                    className="h-36 w-72 object-contain drop-shadow-[0_0_24px_rgba(34,211,238,0.42)]"
-                    src="/storage/Assets/DragonaLogoD.png"
+                    className="h-auto w-[min(92vw,640px)] max-w-none object-contain mix-blend-screen drop-shadow-[0_0_24px_rgba(34,211,238,0.5)]"
+                    src="/storage/Assets/Logo2.png"
                 />
-                <div className="mt-4 h-px w-56 overflow-hidden bg-white/12">
+                <p className="-mt-4 text-xs font-bold tracking-[0.14em] text-white uppercase drop-shadow-[0_3px_10px_rgba(0,0,0,0.85)] sm:-mt-7 sm:text-sm">
+                    Where dragons rise, kingdoms fall.
+                </p>
+                <div className="mt-7 h-px w-56 overflow-hidden bg-white/12 sm:w-72">
                     <div className="dragona-loading-bar h-full w-1/2 bg-gradient-to-r from-transparent via-orange-100 to-cyan-100" />
                 </div>
                 <p className="mt-5 text-xs font-black tracking-[0.28em] text-orange-100 uppercase">
