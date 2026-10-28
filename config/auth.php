@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\GameAccount;
 use App\Models\User;
 
 return [
@@ -40,7 +41,7 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'game_accounts',
         ],
     ],
 
@@ -62,6 +63,11 @@ return [
     */
 
     'providers' => [
+        'game_accounts' => [
+            'driver' => 'eloquent',
+            'model' => GameAccount::class,
+        ],
+
         'users' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', User::class),

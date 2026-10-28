@@ -37,9 +37,8 @@ class SessionController extends Controller
             ]);
         }
 
+        Auth::login($account);
         $request->session()->regenerate();
-        $request->session()->put('auth.game_account_id', $account->getKey());
-        Auth::setUser($account);
 
         return redirect()->intended(route('dashboard', absolute: false));
     }
@@ -47,7 +46,6 @@ class SessionController extends Controller
     public function destroy(Request $request): RedirectResponse
     {
         Auth::logout();
-        $request->session()->forget('auth.game_account_id');
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

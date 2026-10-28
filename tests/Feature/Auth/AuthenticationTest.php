@@ -2,7 +2,6 @@
 
 use App\Actions\Dragona\AuthenticateDragonaAccount;
 use App\Models\GameAccount;
-use App\Models\User;
 use Illuminate\Support\Facades\RateLimiter;
 
 test('login screen can be rendered', function () {
@@ -14,7 +13,7 @@ test('login screen can be rendered', function () {
 test('users can authenticate using the login screen', function () {
     $account = new GameAccount;
     $account->setRawAttributes([
-        'ObjectId' => 1001010000000000999,
+        'ObjectId' => '1001010000000000999',
         'IdName' => 'DragonRider',
         'Email' => 'rider@example.com',
         'Status' => 0,
@@ -32,8 +31,7 @@ test('users can authenticate using the login screen', function () {
         'password' => 'Dragon123',
     ]);
 
-    $this->assertAuthenticated();
-    $response->assertSessionHas('auth.game_account_id', 1001010000000000999);
+    $this->assertAuthenticatedAs($account);
     $response->assertRedirect(route('dashboard', absolute: false));
 });
 
@@ -54,9 +52,14 @@ test('users can not authenticate with invalid password', function () {
 });
 
 test('users can logout', function () {
-    $user = User::factory()->create();
+    $account = new GameAccount;
+    $account->setRawAttributes([
+        'ObjectId' => '1001010000000000999',
+        'IdName' => 'DragonRider',
+        'Status' => 0,
+    ], true);
 
-    $response = $this->actingAs($user)->post(route('logout'));
+    $response = $this->actingAs($account)->post(route('logout'));
 
     $response->assertRedirect(route('home'));
 

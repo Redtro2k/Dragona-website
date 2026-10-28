@@ -17,7 +17,7 @@ class GameAccount extends Authenticatable
 
     public $timestamps = false;
 
-    protected $keyType = 'int';
+    protected $keyType = 'string';
 
     protected $visible = [
         'id',
@@ -38,14 +38,19 @@ class GameAccount extends Authenticatable
     protected function casts(): array
     {
         return [
-            'ObjectId' => 'integer',
             'EmailVerifiedAt' => 'datetime',
+            'RegDate' => 'datetime',
+            'LastLogin' => 'datetime',
+            'LastLogout' => 'datetime',
+            'Status' => 'integer',
+            'ConnectCount' => 'integer',
+            'RecentWorld' => 'integer',
         ];
     }
 
     protected function id(): Attribute
     {
-        return Attribute::get(fn (): int => (int) $this->getRawOriginal('ObjectId'));
+        return Attribute::get(fn (): string => (string) $this->getRawOriginal('ObjectId'));
     }
 
     protected function name(): Attribute
@@ -71,7 +76,7 @@ class GameAccount extends Authenticatable
 
     protected function emailVerifiedAt(): Attribute
     {
-        return Attribute::get(fn (): mixed => $this->getAttributeValue('EmailVerifiedAt'));
+        return Attribute::get(fn (): mixed => $this->getRawOriginal('EmailVerifiedAt'));
     }
 
     public function getAuthPassword(): string

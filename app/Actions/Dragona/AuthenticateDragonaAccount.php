@@ -36,7 +36,7 @@ class AuthenticateDragonaAccount
             return null;
         }
 
-        return GameAccount::query()->find((int) $login[1]);
+        return GameAccount::query()->find((string) $login[1]);
     }
 
     /** @return array<int, mixed>|null */

@@ -1,11 +1,10 @@
 <?php
 
+use App\Http\Controllers\AccountDashboardController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\PublicationController;
 use App\Http\Middleware\EnsureSuperadmin;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('/', [PublicationController::class, 'home'])->name('home');
 Route::get('/search', [PublicationController::class, 'search'])->name('search');
@@ -25,11 +24,7 @@ foreach (['announcement', 'patch-announcement', 'notice', 'events'] as $category
 Route::get('/posts/{slug}', [PublicationController::class, 'show'])->name('posts.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function (Request $request) {
-        return $request->user()->role === 'superadmin'
-            ? redirect()->route('admin.posts.index')
-            : Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', AccountDashboardController::class)->name('dashboard');
 });
 
 Route::middleware(['auth', EnsureSuperadmin::class])->prefix('admin')->name('admin.')->group(function () {
